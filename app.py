@@ -6,14 +6,12 @@ from PIL import Image
 from util import Getter, Defaults, Renderer, Encoder
 from streamlit_drawable_canvas import st_canvas
 
-
-st.title("Jina Search")
-
+# App state setup
 app_state = st.experimental_get_query_params()
 app_state = {k: v[0] if isinstance(v, list) else v for k, v in app_state.items()} # fetch the first item in each query string as we don't have multiple values for each query string key in this example
 
 media_option = ["text", "image", "draw"]
-
+st.markdown("<center><img src='https://raw.githubusercontent.com/jina-ai/jina/master/.github/logo-only.gif' width=300 style='margin-bottom: 2em'></center>", unsafe_allow_html=True)
 st.sidebar.title("Options")
 
 media_default = media_option.index(app_state["media"]) if "media" in app_state else 1
@@ -62,6 +60,7 @@ elif media == "Draw":
         key="canvas",
     )
 
+
 if st.button("Search"):
     if media == "Text":
         results = Getter.text(query=query, top_k=top_k, endpoint=endpoint)
@@ -76,3 +75,5 @@ if st.button("Search"):
         html = Renderer.images(results)
         st.write(html, unsafe_allow_html=True)
     st.balloons()
+
+st.markdown(Defaults.jina_text, unsafe_allow_html=True)
