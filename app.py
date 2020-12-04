@@ -8,18 +8,38 @@ from streamlit_drawable_canvas import st_canvas
 
 
 st.title("Jina Search")
-media_option = ["Text", "Image", "Draw"]
+
+app_state = st.experimental_get_query_params()
+app_state = {k: v[0] if isinstance(v, list) else v for k, v in app_state.items()} # fetch the first item in each query string as we don't have multiple values for each query string key in this example
+
+media_option = ["text", "image", "draw"]
 
 st.sidebar.title("Options")
-media_select = st.sidebar.selectbox(label="Media", options=media_option)
-endpoint = st.sidebar.text_input("Endpoint", value=Defaults.endpoint)
-top_k = st.sidebar.slider("Top K", min_value=1, max_value=20, value=10)
 
-if media_select == "Text":
+media_default = media_option.index(app_state["media"]) if "media" in app_state else 1
+media = st.sidebar.selectbox(label="Media", options=[i.capitalize() for i in media_option], index=media_default)
+
+app_state["media"] = media.lower()
+st.experimental_set_query_params(**app_state)
+
+endpoint_default = app_state["endpoint"] if "endpoint" in app_state else Defaults.endpoint
+endpoint = st.sidebar.text_input("Endpoint", value=endpoint_default)
+app_state["endpoint"] = endpoint
+st.experimental_set_query_params(**app_state)
+
+top_k_default = int(app_state["top_k"]) if "top_k" in app_state else 10
+top_k = st.sidebar.slider("Top K", min_value=1, max_value=20, value=top_k_default)
+app_state["top_k"] = top_k
+st.experimental_set_query_params(**app_state)
+
+if media == "Text":
+    query_default = app_state["q"] if "q" in app_state else Defaults.text_query
     query = st.text_input("What do you wish to search?", value=Defaults.text_query)
-elif media_select == "Image":
+    app_state["q"] = query
+    st.experimental_set_query_params(**app_state)
+elif media == "Image":
     query = st.file_uploader("File")
-elif media_select == "Draw":
+elif media == "Draw":
     st.sidebar.header("Drawing Options")
     stroke_width = st.sidebar.slider("Stroke width: ", 1, 25, 3)
     stroke_color = st.sidebar.color_picker("Stroke color hex: ")
@@ -43,14 +63,14 @@ elif media_select == "Draw":
     )
 
 if st.button("Search"):
-    if media_select == "Text":
+    if media == "Text":
         results = Getter.text(query=query, top_k=top_k, endpoint=endpoint)
         content = results
         st.markdown(Renderer.text(content))
-    elif media_select == "Image" or media_select == "Draw":
-        if media_select == "Image":
+    elif media == "Image" or media == "Draw":
+        if media == "Image":
             encoded_query = Encoder.img_base64(query.read())
-        elif media_select == "Draw":
+        elif media == "Draw":
             encoded_query = Encoder.canvas_to_base64(data)
         results = Getter.images(endpoint=endpoint, query=encoded_query, top_k=top_k)
         html = Renderer.images(results)
