@@ -87,3 +87,10 @@ class Defaults:
     text_query = "Hello world"
     endpoint = "http://0.0.0.0:45678/api/search"
     error = "**Error**: Please check your endpoint is available and that your media type is correct"
+    jina_text = """
+    <center>
+    <a href="https://www.github.com/jina-ai/jina">Jina on GitHub</a> •
+    <a href="https://github.com/jina-ai/jina/tree/master/docs/chapters/101">Jina 101</a> •
+    <a href="https://github.com/jina-ai/integration-streamlit-advanced/">Code for This Project</a>
+    <center>
+    """
