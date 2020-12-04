@@ -85,7 +85,7 @@ class Renderer:
 
 class Defaults:
     text_query = "Hello world"
-    endpoint = "http://0.0.0.0:45678/api/search"
+    endpoint = "http://3.140.167.7:34567/api/search"
     error = "**Error**: Please check your endpoint is available and that your media type is correct"
     jina_text = """
     <center>
